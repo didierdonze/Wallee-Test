@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+		<data>
+
+			<template id="assets_frontend" inherit_id="web.assets_frontend">
+					<xpath expr="link[last()]" position="after">
+							<link rel="stylesheet" type="text/scss" href="/payment_wallee/static/src/scss/payment_form.scss"/>
+							<link rel="stylesheet" type="text/css" href="/payment_wallee/static/src/css/payment_form.css"/>
+					</xpath>
+					<xpath expr="script[last()]" position="after">
+							<script type="text/javascript" src="/payment_wallee/static/src/js/payment_form.js"></script>
+							 <script type="text/javascript" src="/payment_wallee/static/src/js/wallee_interface.js"></script>
+							 <script type="text/javascript" src="/payment_wallee/static/src/js/payment_processing.js"></script>
+					</xpath>
+			</template>
+
+			<template id="payment_tokens_list_wallee" name="Wallee Payment Tokens list" inherit_id="payment.payment_tokens_list">
+				<xpath
+					expr="//form//input[@name='csrf_token']"
+					position="after">
+					<t t-set="wallee_acquirers" t-value="request.env['payment.acquirer'].get_wallee_acquirers(acquirers)" />
+					<t t-set="acquirers" t-value="request.env['payment.acquirer'].get_non_wallee_acquirers(acquirers)" />
+				</xpath>
+				<xpath
+					expr="//t[@t-set='acquirers_count']"
+					position="attributes">
+					<attribute name="t-value">len(acquirers) + len(wallee_acquirers) if acquirers or wallee_acquirers else 0</attribute>
+				</xpath>
+				<xpath
+					expr="//t[@t-foreach='pms']"
+					position="before">
+					<t t-set="currency_name" t-value="currency_name or ''"/>
+					<t t-set="amount" t-value="amount or 0.0"/>
+					<t t-set="origin" t-value="origin or ''"/>
+									<t t-foreach="wallee_acquirers" t-as="w_acq">
+										<t t-foreach="w_acq.get_available_wallee_trans_payment_methods(w_acq.id, currency_name, amount, origin)" t-as="w_pay_meth">
+												<div class="card-body o_payment_acquirer_select">
+														<label>
+															<input type="radio" t-att-data-acquirer-id="w_acq.id"
+																					 t-att-data-form-payment="true"
+																					 t-att-data-provider="w_acq.provider"
+																					 t-att-data-wallee-trans-id="w_pay_meth.get('trans_id', 0)"
+																					 t-att-data-wallee-method-id="w_pay_meth['method_id']"
+																					 t-att-data-wallee-space-id="w_pay_meth['space_id']"
+																					 t-att-data-wallee-trans_interface="w_pay_meth['transaction_interface']"
+																					 t-att-data-wallee-one_click_mode="w_pay_meth.get('one_click_mode', 0)"
+																					 name="pm_id" t-attf-value="form_{{w_acq.id}}"
+																					 t-att-checked="acquirers_count==1 and pms_count==0 or wallee_acquirers[0] == w_acq" />
+																<span class="payment_option_name" t-esc="w_pay_meth['name']"/>
+														</label>
+												</div>
+										</t>
+									</t>
+				</xpath>
+				<xpath expr="//form//input[@name='csrf_token']" position="before">
+						<t t-if="website_sale_order">
+								<t t-set="amount" t-value="website_sale_order.amount_total"/>
+								<t t-set="currency_name" t-value="website_sale_order.pricelist_id.currency_id.name"/>
+								<t t-set="origin" t-value="website_sale_order.name"/>
+						</t>
+						<t t-if="sale_order">
+								<t t-set="amount" t-value="sale_order.amount_total"/>
+								<t t-set="currency_name" t-value="sale_order.pricelist_id.currency_id.name"/>
+								<t t-set="origin" t-value="sale_order.name"/>
+						</t>
+						<t t-if="invoice">
+								<t t-set="amount" t-value="invoice.amount_total"/>
+								<t t-set="currency_name" t-value="invoice.currency_id.name"/>
+								<t t-set="origin" t-value="invoice.name"/>
+						</t>
+				</xpath>
+			</template>
+
+			<template id="wallee_form">
+				<input type="hidden" name="data_set" t-att-data-action-url="tx_url" data-remove-me=""/>
+				<input type="hidden" name='merchant' t-att-value='acquirer.company_id.name'/>
+				<input type="hidden" name='amountIncludingTax' t-att-value="amount"/>
+	
+				<input type="hidden" name='merchantReference' t-att-value='reference'/>
+				<input type="hidden" name='currency' t-att-value='currency_name'/>
+	
+				<input type="hidden" name='customerId' t-att-value='partner_id'/>
+				<input type="hidden" name='givenName' t-att-value='billing_partner_name'/>
+				<input type="hidden" name='street' t-att-value='billing_address'/>
+				<input type="hidden" name='city' t-att-value='billing_partner_city'/>
+				<input type="hidden" name='postCode' t-att-value='billing_partner_zip'/>
+				<input type="hidden" name='phoneNumber' t-att-value='billing_partner_phone'/>
+				<input type="hidden" name='emailAddress' t-att-value='billing_partner_email'/>
+	
+				<input type="hidden" name='successUrl' t-att-value='successUrl'/>
+				<input type="hidden" name='failedUrl' t-att-value='failedUrl'/>
+				<input type="hidden" name='wallee_tx_url' t-att-value='wallee_tx_url'/>
+				<input type="hidden" name='wallee_javascript_url' t-att-value='wallee_javascript_url'/>
+				<input type="hidden" name='wallee_payment_method' t-att-value='wallee_payment_method'/>
+				<input type="hidden" name='return_url' t-att-value='returndata'/>
+				<input type="hidden" name="version" value="1"/>
+				<input id="acquirer_wallee" type="hidden" name="acquirer" t-att-value="acquirer.id"/>
+				<div t-if="wallee_javascript_url" class="container o_website_payment">
+					 <div class="o_wallee_interface">
+							 <div class="row">
+									<div class="o_wallee_interface_content col-sm-6 col-sm-offset-3">
+										</div>
+										<ul id="o_wallee_payment_errors"></ul>
+										<div id="o_wallee_payment_form"></div>
+							 </div>
+					 </div>
+			 </div>
+				<script t-if="wallee_javascript_url" type="text/javascript">
+						odoo.define('payment_wallee.transaction_interface', function(require) {
+								var WalleeInterface = require('payment_wallee.wallee_interface');
+								var walleeInterfaceWidget = new WalleeInterface(null, {});
+								walleeInterfaceWidget.attachTo($('.o_wallee_interface'));
+						});
+				</script>
+			</template>
+
+			<template id="wallee_payment_payment" name="Wallee Payment Payment" inherit_id="payment.pay">
+				<xpath
+					expr="//t[@t-call='payment.payment_tokens_list']"
+					position="inside">
+					<t t-set="currency_name" t-value="currency.name"/>
+					<t t-set="origin" t-value="reference"/>
+				</xpath>
+			</template>
+
+
+			<template id="wallee_payment_unexpected_error" name="Wallee Unexpected Error">
+				<t t-call="website.layout">
+					<t t-set="additional_title">Unexpected Error</t>
+					<div id="wrap" style="background:#e5e5e5;padding:20px 0;margin-top:5%;">
+						<div class="container oe_website_sale" align="center" style="">
+							<i class="fa fa-exclamation-circle" aria-hidden="true" style="color:#B22222;font-size:80px;"></i>
+							<h1 class="mb32">Something went wrong </h1>
+							<h4 class="mb32">An error was encountered while processing your transaction. The transaction has been or has not been processed.</h4>
+							<h5 class="mb32">If problem persist please contact us</h5>
+							<div class="row">
+								<div class="col-lg-8 col-sm-9">
+								</div>
+								<div class="col-lg-8 col-sm-9 oe_cart">
+									<div class="clearfix"/>
+									<div class="oe_structure"/>
+								</div>
+								<div class="col-lg-3 col-lg-offset-1 col-sm-3 text-muted" id="right_column">
+								</div>
+							</div>
+						</div>
+						<div class="oe_structure" />
+					</div>
+				</t>
+        	</template>
+
+		</data>
+</odoo>

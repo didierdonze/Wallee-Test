@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_wallee_payment_method_form" model="ir.ui.view">
+		<field name="name">wallee.payment.method.form</field>
+		<field name="model">wallee.payment.method</field>
+		<field name="arch" type="xml">
+			<form string="Wallee Payment Gateways" create="false"
+				delete="false" edit="false">
+                <header>
+                	<!-- <button name="action_post_data" type="object" string="Post To Server" class="oe_highlight" groups="base.group_system"/> -->
+                </header>
+				<sheet>
+					<div class="oe_button_box" name="button_box">
+						<!-- <button class="oe_stat_button" type="object"
+							name="update_wallee_payment_methods" groups="base.group_system"
+							icon="fa-money" string="Wallee Spaces">
+						</button> -->
+					</div>
+					<group>
+						<field name="name" />
+						<field name='acquirer_id' readonly="1" />
+						<field name='one_click' />
+						<field name='payment_method_ref' readonly="1" />
+						<field name='transaction_interface' />
+						<field name='version' readonly="1" />
+					</group>
+					<group>
+						<field name="space_id" readonly="1" />
+						<field name='method_id' readonly="1" />
+						<field name='image_url' readonly="1" />
+						<field name='sequence' />
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_wallee_payment_method_tree">
+		<field name="name">wallee.payment.method.tree</field>
+		<field name="model">wallee.payment.method</field>
+		<field name="arch" type="xml">
+			<tree string="Wallee Payment Gateways" create="false"
+				delete="false" edit="false">
+				<field name="sequence" widget="handle" />
+				<field name="name" readonly="1" />
+				<field name='payment_method_ref' readonly="1" />
+				<field name='transaction_interface' />
+				<field name='one_click' />
+			</tree>
+		</field>
+	</record>
+
+		<!-- <field name='view_type'>form</field> -->
+	<record id="action_wallee_payment_method"
+		model="ir.actions.act_window">
+		<field name="name">Wallee Payment Gateways</field>
+		<field name="res_model">wallee.payment.method</field>
+		<field name='view_mode'>tree,form</field>
+		<field name="view_id" ref="view_wallee_payment_method_tree" />
+	</record>
+
+</odoo>
