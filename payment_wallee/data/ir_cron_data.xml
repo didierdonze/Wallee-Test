@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Cron to update payment transaction state-->
+
+        <record model="ir.cron" id="cron_update_lastest_wallee_state">
+            <field name='name'>Update wallee state of transaction</field>
+            <field name='interval_number'>3</field>
+            <field name='interval_type'>hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall" eval="False"/>
+            <field name="model_id" ref="payment_wallee.model_payment_acquirer"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_update_wallee_state()</field>
+        </record>
+
+    </data>
+</odoo>

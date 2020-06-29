@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+payment_wallee_payment_method_user,wallee.payment.method.user,model_wallee_payment_method,base.group_user,1,1,1,1
+payment_wallee_payment_method_admin,wallee.payment.method.admin,model_wallee_payment_method,base.group_system,1,1,1,1
+payment_acquirer_log_public,payment.acquirer.log.public,model_payment_acquirer_log,,1,1,1,0
+payment_acquirer_log_user,payment.acquirer.log.user,model_payment_acquirer_log,base.group_user,1,1,1,1
+payment_acquirer_log_admin,payment.acquirer.log.admin,model_payment_acquirer_log,base.group_system,1,1,1,1
