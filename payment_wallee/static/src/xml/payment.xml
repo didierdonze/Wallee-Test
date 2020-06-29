@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+  	<t t-extend="payment.display_tx_list"> 
+	    <t t-jquery="t[t-foreach*='tx_draft'][t-as*='tx'] li" t-operation="append">
+	    	<i class="fa fa-refresh fa-spin" />
+	    </t> 
+	</t>
+
+</templates>

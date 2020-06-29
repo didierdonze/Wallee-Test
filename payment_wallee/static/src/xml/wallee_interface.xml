@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="wallee_interface" xml:space="preserve">
+	
+    <t t-name="wallee_interface.display_interface">
+    	<div class="wallee_inter">
+    		<ul class="wallee-payment-errors"></ul>
+			<div id="wallee-payment-form" class="wallee-payment-form"></div>
+    	</div>
+    </t>
+
+</templates>
